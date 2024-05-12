@@ -53,7 +53,9 @@ type MeadowApp() =
 
                 do! Task.Delay(1000) |> Async.AwaitTask
         }
-        runAsync |> Async.StartAsTask :> Task
+        runAsync |> Async.StartAsTask
 
     static member Main(args: string[]) =
-        MeadowOS.Start(args) |> Async.AwaitTask |> ignore
+        let task = MeadowOS.Start(args)
+        task.Wait()
+        0

@@ -3,8 +3,10 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-obj/
-bin/
+_ReSharper.*
+bin
+obj
+packages
 
 # dotenv files
 .env
