@@ -13,8 +13,8 @@
     <ItemGroup>
         <PackageReference Include="Meadow" Version="1.11.0.2-beta" />
         <PackageReference Include="Meadow.Foundation" Version="1.11.0.2-beta" />
-        <PackageReference Include="Meadow.Windows" Version="1.11.0" />
-        <PackageReference Include="Meadow.Foundation.ICs.IOExpanders.Ft232h" Version="1.10.2" />
+        <PackageReference Include="Meadow.Windows" Version="1.11.0.2-beta" />
+        <PackageReference Include="Meadow.Foundation.ICs.IOExpanders.Ft232h" Version="1.11.0.2-beta" />
     </ItemGroup>
     <ItemGroup>
         <None Update="meadow.config.yaml">
@@ -25,11 +25,6 @@
         </None>
         <None Update="wifi.config.yaml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
-    <ItemGroup>
-        <None Update="libmpsse.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 </Project>

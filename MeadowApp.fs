@@ -1,17 +1,16 @@
-﻿namespace Meadow.Desktop.FSharp
-
-open System
+﻿open System
 open Meadow
 open Meadow.Foundation.ICs.IOExpanders
 open Meadow.Foundation.Leds
 open Meadow.Peripherals.Leds
 open System.Threading.Tasks
+open AsyncPrimitives
 
 type MeadowApp() =
     inherit App<Windows>()
 
     let mutable rgbLed : RgbLed = null
-    
+
     let driveLEDAsync = async {
         while true do
             Resolver.Log.Info("Going through each color...")
@@ -59,15 +58,7 @@ type MeadowApp() =
 
 module Main =        
     [<EntryPoint>]
-    let main argv =
-        try
-            let osVersion = Environment.OSVersion
-            Console.WriteLine("OS Version: {0}", osVersion)
-            let app = MeadowApp()
-            app.Initialize() |> ignore
-            app.Run() |> ignore
-            0 // return 0 if everything went well
-        with
-        | :? Exception as ex -> 
-            Console.Error.WriteLine("An error occurred: {0}", ex.Message)
-            1 // return 1 if an error occurred
+    let main args =
+        MeadowOS.Start(args) |> Async.AwaitTask |> Async.RunSynchronously
+        0
+        
