@@ -2,23 +2,61 @@
 open Meadow
 open Meadow.Foundation.ICs.IOExpanders
 open Meadow.Foundation.Leds
+open Meadow.Foundation.Relays
+open Meadow.Foundation.Sensors.Buttons
+open Meadow.Foundation.Sensors.Switches
+open Meadow.Hardware
 open Meadow.Peripherals.Leds
 open System.Threading.Tasks
-open AsyncPrimitives
 
 type MeadowApp() =
     inherit App<Windows>()
 
     let mutable rgbLed : RgbLed = null
+    let mutable retractRelay : Relay = null
+    let mutable stopRelay : Relay = null
+    let mutable extendRelay : Relay = null
+    
+    let mutable rainSensor : IDigitalInputPort = null
 
     let driveLEDAsync = async {
         while true do
-            Resolver.Log.Info("Going through each color...")
-            for i in 0 .. int RgbLedColors.count - 1 do
+            Resolver.Log.Info("Going through subset of colors...")
+            for i in 0 .. (int RgbLedColors.count / 2 ) do
                 rgbLed.SetColor(unbox<RgbLedColors>(i))
-                do! Task.Delay(500) |> Async.AwaitTask
-
+                do! Task.Delay(250) |> Async.AwaitTask
+            rgbLed.IsOn <- false
+            
+            if rainSensor.State = true  then
+                Resolver.Log.Info("Rain Sensor is ON")
+            else
+                Resolver.Log.Info("Rain Sensor is OFF")
+            
             do! Task.Delay(1000) |> Async.AwaitTask
+(*            
+            Resolver.Log.Info("Setting Retract Relay...")
+            retractRelay.Toggle()
+            do! Task.Delay(500) |> Async.AwaitTask
+            retractRelay.Toggle()
+            do! Task.Delay(1500) |> Async.AwaitTask
+            
+            Resolver.Log.Info("Setting Stop Relay...")
+            stopRelay.Toggle()
+            do! Task.Delay(500) |> Async.AwaitTask
+            stopRelay.Toggle()
+            do! Task.Delay(1500) |> Async.AwaitTask
+            
+            Resolver.Log.Info("Setting Extend Relay...")
+            extendRelay.Toggle()
+            do! Task.Delay(500) |> Async.AwaitTask
+            extendRelay.Toggle()
+            do! Task.Delay(1500) |> Async.AwaitTask
+           
+            Resolver.Log.Info("Setting Stop Relay...")
+            stopRelay.Toggle()
+            do! Task.Delay(500) |> Async.AwaitTask
+            stopRelay.Toggle()
+            do! Task.Delay(1500) |> Async.AwaitTask
 
             Resolver.Log.Info("Blinking through each color (on 500ms / off 500ms)...")
             for i in 0 .. int RgbLedColors.count - 1 do
@@ -37,9 +75,9 @@ type MeadowApp() =
                 do! rgbLed.StopAnimation() |> Async.AwaitTask
                 rgbLed.IsOn <- false
 
-            do! Task.Delay(1000) |> Async.AwaitTask
+            do! Task.Delay(1000) |> Async.AwaitTask *)
     }
-
+    
     override this.Initialize() =
         Console.WriteLine("Creating Outputs")
 
@@ -49,6 +87,11 @@ type MeadowApp() =
             expander.Pins.C2,
             expander.Pins.C1,
             expander.Pins.C0)
+        
+        retractRelay <- Relay(expander.Pins.C3)
+        stopRelay <- Relay(expander.Pins.C4)
+        extendRelay <- Relay(expander.Pins.C5)
+        rainSensor <- expander.Pins.C6.CreateDIgitalInputPort(Port.ResistorMode.ExternalPullDown)
 
         Task.CompletedTask
 
