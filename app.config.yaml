@@ -6,10 +6,10 @@
 Lifecycle:
     
     # Control whether Meadow will restart when an unhandled app exception occurs. Combine with Lifecycle > AppFailureRestartDelaySeconds to control restart timing.
-    RestartOnAppFailure: false
+    RestartOnAppFailure: true
 
     # When app set to restart automatically on app failure, 
-#    AppFailureRestartDelaySeconds: 15
+    AppFailureRestartDelaySeconds: 15
 
 # Logging configuration.
 Logging:
@@ -24,13 +24,13 @@ Logging:
 MeadowCloud:
 
     # Enable Logging, Events, Command + Control
-#    Enabled: false
+    Enabled: false
 
     # Enable Over-the-air Updates
-#    EnableUpdates: false
+    EnableUpdates: true
 
     # Enable Health Metrics
-#    EnableHealthMetrics: false
+    EnableHealthMetrics: true
 
     # How often to send metrics to Meadow.Cloud
-#    HealthMetricsIntervalMinutes: 60
+    HealthMetricsIntervalMinutes: 60
