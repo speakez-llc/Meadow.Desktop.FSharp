@@ -18,7 +18,7 @@ Logging:
     LogLevel:
     
         # Trace, Debug, Information, Warning, or Error
-        Default: Information
+        Default: Trace
 
 # Meadow.Cloud configuration.
 MeadowCloud:
@@ -27,10 +27,10 @@ MeadowCloud:
     Enabled: false
 
     # Enable Over-the-air Updates
-    EnableUpdates: true
+    EnableUpdates: false
 
     # Enable Health Metrics
-    EnableHealthMetrics: true
+    EnableHealthMetrics: false
 
     # How often to send metrics to Meadow.Cloud
     HealthMetricsIntervalMinutes: 60
