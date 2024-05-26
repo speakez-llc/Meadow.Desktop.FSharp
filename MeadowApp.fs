@@ -59,10 +59,19 @@ type MeadowApp() =
     }
     
     let runServoAsync = async {
+        do! wiperServo.RotateTo(Angle(0.0, Angle.UnitType.Degrees)) |> Async.AwaitTask
+
         while true do
-            wiperServo.RotateTo(new Angle(90.0, Angle.UnitType.Degrees)) |> ignore
+            for i in 0 .. int wiperServo.Config.MaximumAngle.Degrees do
+                do! wiperServo.RotateTo(Angle(float i, Angle.UnitType.Degrees)) |> Async.AwaitTask
+                Resolver.Log.Info(sprintf "Rotating to %d" i)
+
             do! Task.Delay(1000) |> Async.AwaitTask
-            wiperServo.RotateTo(new Angle(0.0, Angle.UnitType.Degrees)) |> ignore
+
+            for i in [180 .. -1 .. int wiperServo.Config.MinimumAngle.Degrees] do
+                do! wiperServo.RotateTo(Angle(float i, Angle.UnitType.Degrees)) |> Async.AwaitTask
+                Resolver.Log.Info(sprintf "Rotating to %d" i)
+
             do! Task.Delay(1000) |> Async.AwaitTask
     }
     
@@ -75,8 +84,8 @@ type MeadowApp() =
         rainSensor <- expander.Pins.C6.CreateDigitalInputPort(ResistorMode.ExternalPullDown)
         
         let i2cBus = expander.CreateI2cBus(expander.Pins.D0, expander.Pins.D1, I2cBusSpeed.Standard)
-        pca9685 <- Pca9685(i2cBus, Frequency(240.0, Frequency.UnitType.Hertz), Convert.ToByte(64))
-        port0 <- pca9685.CreatePwmPort(Convert.ToByte(0), 0.05f)
+        pca9685 <- Pca9685(i2cBus)
+        port0 <- pca9685.CreatePwmPort(Convert.ToByte(0))
         wiperServo <- Servo(port0, NamedServoConfigs.SG90)
 
         Task.CompletedTask
