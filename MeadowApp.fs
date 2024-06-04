@@ -9,7 +9,9 @@ open Meadow.Peripherals.Sensors.Location
 open Meadow.Units
 
 type MeadowApp() =
-    inherit App<Windows>()
+    inherit App<Windows>()    
+    let mutable expander = FtdiExpanderCollection.Devices.Item(0)
+    let mutable I2CBus = expander.CreateI2cBus()
     let mutable pca9685 : Pca9685 = null
     let mutable retractRelay : Relay = null
     let mutable stopRelay : Relay = null
@@ -77,14 +79,13 @@ type MeadowApp() =
     
     override this.Initialize() =
         Console.WriteLine("Creating Outputs")
-        let expander = FtdiExpanderCollection.Devices[0]
         retractRelay <- Relay(expander.Pins.C3)
         stopRelay <- Relay(expander.Pins.C4)
         extendRelay <- Relay(expander.Pins.C5)
         rainSensor <- expander.Pins.C6.CreateDigitalInputPort(ResistorMode.ExternalPullDown)
+        I2CBus <- expander.CreateI2cBus()
         
-        let i2cBus = expander.CreateI2cBus(expander.Pins.D0, expander.Pins.D1, I2cBusSpeed.Standard)
-        pca9685 <- Pca9685(i2cBus)
+        pca9685 <- Pca9685(I2CBus, Convert.ToByte(40))
         port0 <- pca9685.CreatePwmPort(Convert.ToByte(0))
         wiperServo <- Servo(port0, NamedServoConfigs.SG90)
 
