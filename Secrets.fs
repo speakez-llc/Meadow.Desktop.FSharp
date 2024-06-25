@@ -1,0 +1,5 @@
+﻿module Secrets
+
+let WEATHER_API_KEY = "a79b92e616c5aa998d96a5724a4620f0"
+let LATITUDE = "35.60095"
+let LONGITUDE = "-82.55402"
