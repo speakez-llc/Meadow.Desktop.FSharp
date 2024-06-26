@@ -6,24 +6,21 @@ open System.Net.Http
 open FSharp.Json
 open Meadow
 open WeatherReading
-open Secrets
 
 let epoch = DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
 let localDateTime (unixTimestamp : int64) =
     epoch.AddSeconds(float unixTimestamp).ToLocalTime()
 
-let climateDataUri = "https://api.openweathermap.org/data/2.5/weather"
+let weatherUri = "https://api.openweathermap.org/data/2.5/"
 
-let forecastDataUri = "https://api.openweathermap.org/data/2.5/forecast"
-
-let printCurrent (reading: ExtendedCurrentResponse) =
-    let properties = typeof<ExtendedCurrentResponse>.GetProperties()
+let printReading<'T, 'W> (reading: 'T) =
+    let properties = typeof<'T>.GetProperties()
     for prop in properties do
-        if prop.PropertyType = typeof<Weather[]> then
-            let weatherArray = prop.GetValue(reading, null) :?> Weather[]
+        if prop.PropertyType = typeof<'W[]> then
+            let weatherArray = prop.GetValue(reading, null) :?> 'W[]
             for weather in weatherArray do
                 printfn "weather:"
-                let weatherProperties = typeof<Weather>.GetProperties()
+                let weatherProperties = typeof<'W>.GetProperties()
                 for weatherProp in weatherProperties do
                     let value = weatherProp.GetValue(weather, null)
                     printfn $"  %s{weatherProp.Name}: {value}"
@@ -31,27 +28,17 @@ let printCurrent (reading: ExtendedCurrentResponse) =
             let value = prop.GetValue(reading, null)
             printfn $"%s{prop.Name}: {value}"
             
-let printForecast (reading: ExtendedForecastResponse) =
-    let properties = typeof<ExtendedForecastResponse>.GetProperties()
-    for prop in properties do
-        if prop.PropertyType = typeof<WeatherForecast[]> then
-            let weatherArray = prop.GetValue(reading, null) :?> WeatherForecast[]
-            for weather in weatherArray do
-                printfn "weather:"
-                let weatherProperties = typeof<WeatherForecast>.GetProperties()
-                for weatherProp in weatherProperties do
-                    let value = weatherProp.GetValue(weather, null)
-                    printfn $"  %s{weatherProp.Name}: {value}"
-        else
-            let value = prop.GetValue(reading, null)
-            printfn $"%s{prop.Name}: {value}"
-
 let GetWeatherConditions() : Task<ExtendedCurrentResponse option> =
     async {
         use client = new HttpClient()
         client.Timeout <- TimeSpan(0, 5, 0)
         try
-            let! response = client.GetAsync $"%s{climateDataUri}?lat=%s{Secrets.LATITUDE}&lon=%s{Secrets.LONGITUDE}&appid=%s{Secrets.WEATHER_API_KEY}&units=imperial" |> Async.AwaitTask
+            let! response = client.GetAsync (weatherUri +
+                                             "weather" +
+                                             "?lat=" + Secrets.LATITUDE +
+                                             "&lon=" + Secrets.LONGITUDE +
+                                             "&appid=" + Secrets.WEATHER_API_KEY +
+                                             "&units=imperial") |> Async.AwaitTask
             response.EnsureSuccessStatusCode() |> ignore
             let! json = response.Content.ReadAsStringAsync() |> Async.AwaitTask
             let values = Json.deserialize<Current>(json)
@@ -83,7 +70,7 @@ let GetWeatherConditions() : Task<ExtendedCurrentResponse option> =
                 }
             
             Resolver.Log.Info("Current Weather Task ...")
-            printCurrent extendedValues
+            printReading<ExtendedCurrentResponse, Weather> extendedValues
             return Some extendedValues
         with
         | :? TaskCanceledException ->
@@ -93,13 +80,18 @@ let GetWeatherConditions() : Task<ExtendedCurrentResponse option> =
             Resolver.Log.Info $"Conditions request went sideways: %s{e.Message}"
             return None
     } |> Async.StartAsTask
-    
+
 let GetWeatherForecast() : Task<ExtendedForecastResponse option> =
     async {
         use client = new HttpClient()
         client.Timeout <- TimeSpan(0, 5, 0)
         try
-            let! response = client.GetAsync $"%s{forecastDataUri}?lat=%s{Secrets.LATITUDE}&lon=%s{Secrets.LONGITUDE}&appid=%s{Secrets.WEATHER_API_KEY}&units=imperial&cnt=2" |> Async.AwaitTask
+            let! response = client.GetAsync (weatherUri +
+                                             "forecast" +
+                                             "?lat=" + Secrets.LATITUDE +
+                                             "&lon=" + Secrets.LONGITUDE +
+                                             "&appid=" + Secrets.WEATHER_API_KEY +
+                                             "&units=imperial&cnt=2") |> Async.AwaitTask
             response.EnsureSuccessStatusCode() |> ignore
             let! json = response.Content.ReadAsStringAsync() |> Async.AwaitTask
             let forecastResponse = Json.deserialize<ForecastResponse>(json)
@@ -114,7 +106,6 @@ let GetWeatherForecast() : Task<ExtendedForecastResponse option> =
                     values <- forecastResponse.list.[1]
                     else
                     Resolver.Log.Info("Using First Forecast ...")
-                        
 
                 let extendedForecastValues =
                     { dt = values.dt
@@ -129,7 +120,7 @@ let GetWeatherForecast() : Task<ExtendedForecastResponse option> =
                       dt_txt = values.dt_txt
                     }
                 Resolver.Log.Info("Weather Forecast Task ...")
-                printForecast extendedForecastValues
+                printReading<ExtendedForecastResponse, WeatherForecast> extendedForecastValues
                 return Some extendedForecastValues
             else
                 Resolver.Log.Info("No forecast data available.")

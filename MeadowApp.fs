@@ -1,8 +1,6 @@
 ﻿open System
 open Meadow
-open Meadow.Foundation.ICs.IOExpanders
 open Meadow.Foundation.Relays
-open Meadow.Foundation.Servos
 open Meadow.Hardware
 open System.Threading.Tasks
 open Meadow.Units
@@ -10,15 +8,15 @@ open WeatherService
 
 type MeadowApp() =
     inherit App<Windows>()    
-    let mutable expander = FtdiExpanderCollection.Devices[0]
+    //let mutable expander = FtdiExpanderCollection.Devices[0]
     let mutable i2CBus = null
-    let mutable pca9685 : Pca9685 = null
+    //let mutable pca9685 : Pca9685 = null
     let mutable retractRelay : Relay = null
     let mutable stopRelay : Relay = null
     let mutable extendRelay : Relay = null
     let mutable rainSensor : IDigitalInputPort = null
-    let mutable port0 : IPwmPort = null
-    let mutable wiperServo : AngularServo = null
+    //let mutable port0 : IPwmPort = null
+    //let mutable wiperServo : AngularServo = null
     
     let retractAwning =
         async {
@@ -60,7 +58,7 @@ type MeadowApp() =
             do! Task.Delay(3000) |> Async.AwaitTask
     }
     
-    let runServoTask = task {
+    (*let runServoTask = task {
         do wiperServo.RotateTo(Angle 0) 
 
         while true do
@@ -75,14 +73,14 @@ type MeadowApp() =
                 Resolver.Log.Info(sprintf "Rotating to %d" i)
 
             do! Task.Delay(1000) |> Async.AwaitTask
-    }
+    }*)
     
     override this.Initialize() =
         Console.WriteLine("Creating Outputs")
-        retractRelay <- Relay(expander.Pins.C3)
+        (*retractRelay <- Relay(expander.Pins.C3)
         stopRelay <- Relay(expander.Pins.C4)
         extendRelay <- Relay(expander.Pins.C5)
-        rainSensor <- expander.Pins.C6.CreateDigitalInputPort(ResistorMode.ExternalPullDown)
+        rainSensor <- expander.Pins.C6.CreateDigitalInputPort(ResistorMode.ExternalPullDown)*)
         //let mutable i2CBus = expander.CreateI2cBus()
         
         //pca9685 <- new Pca9685(i2CBus, Frequency(50, Frequency.UnitType.Hertz));
