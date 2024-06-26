@@ -99,19 +99,26 @@ let GetWeatherForecast() : Task<ExtendedForecastResponse option> =
         use client = new HttpClient()
         client.Timeout <- TimeSpan(0, 5, 0)
         try
-            let! response = client.GetAsync $"%s{forecastDataUri}?lat=%s{Secrets.LATITUDE}&lon=%s{Secrets.LONGITUDE}&appid=%s{Secrets.WEATHER_API_KEY}&units=imperial&cnt=1" |> Async.AwaitTask
+            let! response = client.GetAsync $"%s{forecastDataUri}?lat=%s{Secrets.LATITUDE}&lon=%s{Secrets.LONGITUDE}&appid=%s{Secrets.WEATHER_API_KEY}&units=imperial&cnt=2" |> Async.AwaitTask
             response.EnsureSuccessStatusCode() |> ignore
             let! json = response.Content.ReadAsStringAsync() |> Async.AwaitTask
             let forecastResponse = Json.deserialize<ForecastResponse>(json)
 
-            if forecastResponse.list.Length > 0 then
-                let values = forecastResponse.list.[0]
-
+            if forecastResponse.list.Length > 1 then
+                let mutable values = forecastResponse.list.[0]
                 let forecast_local_dt = localDateTime values.dt
+                let current_local_dt = DateTime.Now
+
+                if Math.Abs((forecast_local_dt - current_local_dt).TotalHours) <= 1.0 then
+                    Resolver.Log.Info("Using Second Forecast ...")
+                    values <- forecastResponse.list.[1]
+                    else
+                    Resolver.Log.Info("Using First Forecast ...")
+                        
 
                 let extendedForecastValues =
                     { dt = values.dt
-                      forecast_local_dt = forecast_local_dt
+                      forecast_local_dt = localDateTime values.dt
                       main = values.main
                       weather = values.weather
                       clouds = values.clouds
