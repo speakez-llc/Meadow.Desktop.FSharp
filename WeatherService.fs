@@ -159,20 +159,21 @@ let createHalfCircle (latitude: float, longitude: float, radius: float) =
     points
 //    |> List.map (fun (lat, lon) -> $"{lat},{lon},")
 //    |> String.concat "\n"
-    
+
+// This code is used to create an east-facing cone centered on the specified latitude and longitude    
 let createCone (latitude: float, longitude: float, radius: float) =
     let originalCenter = Coordinate(latitude, longitude)
     let center = Coordinate(latitude, longitude)
     center.Move((radius * 1000.0), 290, Shape.Sphere) 
     let gd = GeoFence.Drawer(center, Shape.Sphere, 210)
-    let points = [getLatLon originalCenter] // add original center as the first point
+    let points = [getLatLon originalCenter] 
     for i in 0..4 do
         let angle = (i - 10 + 360) % 360
         gd.Draw(Distance(radius/8.0), angle)
     gd.Close()
-    let points = points @ (gd.Points |> List.ofSeq |> List.map getLatLon) // add the rest of the points
-    let points = points |> List.take (List.length points - 1) // remove the last point
-    let points = points @ [getLatLon originalCenter] // add original center as the last point
+    let points = points @ (gd.Points |> List.ofSeq |> List.map getLatLon) 
+    let points = points |> List.take (List.length points - 1) 
+    let points = points @ [getLatLon originalCenter] 
     points
-    |> List.map (fun (lat, lon) -> $"{lat},{lon},")
-    |> String.concat "\n"
+//    |> List.map (fun (lat, lon) -> $"{lat},{lon},") // format the points as multi-line strings to verify at this site:
+//    |> String.concat "\n"                           // https://mobisoftinfotech.com/tools/plot-multiple-points-on-map/ 
