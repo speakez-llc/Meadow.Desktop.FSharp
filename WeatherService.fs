@@ -176,4 +176,22 @@ let createCone (latitude: float, longitude: float, radius: float) =
     let points = points @ [getLatLon originalCenter] 
     points
 //    |> List.map (fun (lat, lon) -> $"{lat},{lon},") // format the points as multi-line strings to verify at this site:
-//    |> String.concat "\n"                           // https://mobisoftinfotech.com/tools/plot-multiple-points-on-map/ 
+//    |> String.concat "\n"                           // https://mobisoftinfotech.com/tools/plot-multiple-points-on-map/
+
+//let createTriangle (latitude: float, longitude: float, radius: float, heading: float) =
+    // plot center point as the first gd.Draw with a distance of 0 and angle of the heading
+    // gd.Draw a point the length of the radius along the direction of the heading + 15 degrees
+    // set the angle to heading - 60 and draw a point 1/4th of the radius length
+    // close the GeoFence.Drawer
+    
+let createTriangle (latitude: float, longitude: float, radius: float, heading: float) =
+    let originalCenter = Coordinate(latitude, longitude)
+    let gd = GeoFence.Drawer(originalCenter, Shape.Sphere, 210)
+    // Draw a point the length of the radius along the direction of the heading + 15 degrees
+    gd.Draw(Distance(radius), (heading + 15.0) % 360.0)
+    gd.Draw(Distance(radius), (heading - 15.0) % 360.0)
+    gd.Close()
+    let points = gd.Points |> List.ofSeq |> List.map getLatLon // add the rest of the points
+    points
+    
+    //35.58166423535203, -82.5574313954071
