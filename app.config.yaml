@@ -34,3 +34,9 @@ MeadowCloud:
 
     # How often to send metrics to Meadow.Cloud
     HealthMetricsIntervalMinutes: 60
+    
+WeatherService:
+    Latitude: "35.58135"
+    Longitude: "-82.557421"
+    Api_Key: "a79b92e616c5aa998d96a5724a4620f0"
+    

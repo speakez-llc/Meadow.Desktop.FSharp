@@ -104,14 +104,6 @@ type MainForecast =
         temp_kf: float
     }
 
-type WeatherForecast =
-    {
-        id: int
-        main: string
-        description: string
-        icon: string
-    }
-
 type CloudsForecast =
     {
         all: int
@@ -133,7 +125,7 @@ type ListForecast =
     {
         dt: int64
         main: MainForecast
-        weather: WeatherForecast array
+        weather: Weather array
         clouds: CloudsForecast
         wind: WindForecast
         visibility: int
@@ -147,7 +139,7 @@ type ExtendedForecastResponse =
         dt: int64
         forecast_local_dt: DateTime
         main: MainForecast
-        weather: WeatherForecast array
+        weather: Weather array
         clouds: CloudsForecast
         wind: WindForecast
         visibility: int

@@ -14,16 +14,16 @@
         <Compile Include="MeadowApp.fs" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="FSharp.Json" Version="0.4.1" />
         <ProjectReference Include="D:\repos\Meadow.Core\source\Meadow.Core\Meadow.Core.csproj" />
         <ProjectReference Include="D:\repos\Meadow.Core\source\implementations\windows\Meadow.Windows\Meadow.Windows.csproj" />
         <ProjectReference Include="D:\repos\Meadow.Foundation\Source\Meadow.Foundation.Core\Meadow.Foundation.Core.csproj" />
         <ProjectReference Include="D:\repos\Meadow.Logging\Source\Meadow.Logging\lib\Meadow.Logging.csproj" />
         <ProjectReference Include="D:\repos\Meadow.Contracts\Source\Meadow.Contracts\Meadow.Contracts.csproj" />
         <ProjectReference Include="D:\repos\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\ICs.IOExpanders.Ftxxxx\Driver\ICs.IOExpanders.Ftxxxx.csproj" />
-        <ProjectReference Include="D:\repos\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\ICs.IOExpanders.PCA9685\Driver\ICs.IOExpanders.Pca9685.csproj" />
         <ProjectReference Include="D:\repos\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Servos\Driver\Servos.csproj" />
         <ProjectReference Include="D:\repos\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Serialization.MicroJson\Driver\Serialization.MicroJson.csproj" />
+        <PackageReference Include="FSharp.Json" Version="0.4.1" />
+        <PackageReference Include="CoordinateSharp" Version="2.23.1.1" />
         <PackageReference Update="FSharp.Core" Version="8.0.300" />
     </ItemGroup>
     <ItemGroup>

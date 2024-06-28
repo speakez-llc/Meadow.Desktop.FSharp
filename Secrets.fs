@@ -1,5 +1,19 @@
 ﻿module Secrets
 
-let WEATHER_API_KEY = "a79b92e616c5aa998d96a5724a4620f0"
-let LATITUDE = "35.60095"
-let LONGITUDE = "-82.55402"
+open Meadow
+
+type AppSettingsCollector() =
+    inherit ConfigurableObject()
+    member this.GetConfiguredString(key: string) =
+        let settings = Resolver.App.Settings
+        if settings.ContainsKey(key) then
+            let value = settings.[key]
+            value
+        else
+            null
+
+let LATITUDE = AppSettingsCollector().GetConfiguredString("WeatherService.Latitude")
+
+let LONGITUDE = AppSettingsCollector().GetConfiguredString("WeatherService.Longitude")
+
+let WEATHER_API_KEY = AppSettingsCollector().GetConfiguredString("WeatherService.Api_Key")

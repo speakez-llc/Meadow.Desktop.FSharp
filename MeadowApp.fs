@@ -1,6 +1,8 @@
 ﻿open System
 open Meadow
 open Meadow.Foundation.Relays
+open Meadow.Foundation.Servos
+open Meadow.Foundation.ICs.IOExpanders
 open Meadow.Hardware
 open System.Threading.Tasks
 open Meadow.Units
@@ -14,7 +16,7 @@ type MeadowApp() =
     let mutable retractRelay : Relay = null
     let mutable stopRelay : Relay = null
     let mutable extendRelay : Relay = null
-    let mutable rainSensor : IDigitalInputPort = null
+    //let mutable rainSensor : IDigitalInputPort = null
     //let mutable port0 : IPwmPort = null
     //let mutable wiperServo : AngularServo = null
     
@@ -43,7 +45,7 @@ type MeadowApp() =
         }
             
 
-    let driveLEDAsync = task {
+    (*let driveLEDAsync = task {
         while true do
             
             if rainSensor.State = true  then
@@ -56,9 +58,9 @@ type MeadowApp() =
                 Resolver.Log.Info("Rain Sensor is OFF")
             
             do! Task.Delay(3000) |> Async.AwaitTask
-    }
+    }*)
     
-    (*let runServoTask = task {
+    (*let runServoTask() = task {
         do wiperServo.RotateTo(Angle 0) 
 
         while true do
@@ -80,12 +82,12 @@ type MeadowApp() =
         (*retractRelay <- Relay(expander.Pins.C3)
         stopRelay <- Relay(expander.Pins.C4)
         extendRelay <- Relay(expander.Pins.C5)
-        rainSensor <- expander.Pins.C6.CreateDigitalInputPort(ResistorMode.ExternalPullDown)*)
-        //let mutable i2CBus = expander.CreateI2cBus()
+        rainSensor <- expander.Pins.C6.CreateDigitalInputPort(ResistorMode.ExternalPullDown)
+        i2CBus <- expander.CreateI2cBus()*)
         
-        //pca9685 <- new Pca9685(i2CBus, Frequency(50, Frequency.UnitType.Hertz));
-        //port0 <- pca9685.CreatePwmPort(pca9685.Pins.LED0, 0.05f)
-        //wiperServo <- new Sg90(port0)
+        (*pca9685 <- new Pca9685(i2CBus, Frequency(50, Frequency.UnitType.Hertz));
+        port0 <- pca9685.CreatePwmPort(pca9685.Pins.LED0, 0.05f)
+        wiperServo <- new Sg90(port0)*)
 
         Task.CompletedTask
 
