@@ -135,7 +135,7 @@ let GetWeatherForecast() : Task<ExtendedForecastResponse option> =
             return None
     } |> Async.StartAsTask
     
-// This code is used to create an east-facing half-oval centered on the specified latitude and longitude
+// This code is used to create a geo-fenced area in the shape of a pie slice from its point of origin
 open CoordinateSharp
 
 let getLatLon (coord: Coordinate) =
