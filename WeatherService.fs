@@ -137,20 +137,16 @@ let GetWeatherForecast() : Task<ExtendedForecastResponse option> =
     
 // This code is used to create a geo-fenced area in the shape of a pie slice from its point of origin
 open CoordinateSharp
-
-let getLatLon (coord: Coordinate) =
-    let latitude = coord.Latitude.DecimalDegree * 1e6 |> round |> fun x -> x / 1e6
-    let longitude = coord.Longitude.DecimalDegree * 1e6 |> round |> fun x -> x / 1e6
-    (latitude, longitude)
+GlobalSettings.Default_CoordinateFormatOptions.Round = 6 |> ignore
     
 let calculateNewPoint (point : GeoFence.Point, headingDeg: double, distanceKm: double) =
     let newCoordinate = new Coordinate(point.Latitude, point.Longitude)
     newCoordinate.Move(distanceKm * 1000.0, headingDeg, Shape.Sphere)
-    let newPoint = getLatLon newCoordinate
+    let newPoint = (newCoordinate.Latitude.DecimalDegree, newCoordinate.Longitude.DecimalDegree)
     GeoFence.Point(newPoint |> fst, newPoint |> snd)
     
 let createPieSlice (latA: float, lonA: float, radiusKm: float, bearingDeg: float, angleDeg: float) =
-    let startPoint = GeoFence.Point(latA, lonA)
+    let startPoint = GeoFence.Point((latA * 1e6 |> round |> fun x -> x / 1e6), (lonA * 1e6 |> round |> fun x -> x / 1e6))
     let mutable points : List<GeoFence.Point> = []
     points <- startPoint :: points // Prepend startPoint to the list
     let bearingMin = (bearingDeg - (angleDeg / 2.0)) % 360.0
@@ -160,7 +156,7 @@ let createPieSlice (latA: float, lonA: float, radiusKm: float, bearingDeg: float
         points <- newPoint :: points
     points <- startPoint :: points // Postpend startPoint to the list
     points
-    |> List.map (fun point -> $"{point.Latitude},{point.Longitude},") 
+    |> List.map (fun point -> $"{point.Latitude},{point.Longitude},'','',''") 
     |> String.concat "\n"
     
-// createPieSlice(35.581664, -82.557433, 5.0, 300, 40.0)
+// createPieSlice(35.78820176337251, -78.66028443081716, 5.0, 300, 40.0)
